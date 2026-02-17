@@ -1,0 +1,107 @@
+<idea-plugin>
+    <id>com.craniumai.adversarialinputs</id>
+    <name>Adversarial Inputs Detector</name>
+    <vendor email="support@cranium.ai" url="https://cranium.ai">Cranium AI</vendor>
+
+    <description><![CDATA[
+    <h1>Adversarial Inputs Detector</h1>
+    <p>A JetBrains IDE plugin that detects malicious content in documentation and code files that can exploit AI coding assistants.</p>
+
+    <h2>What It Does</h2>
+    <p>Protects developers from malicious repositories by detecting three categories of threats:</p>
+    <ul>
+        <li><strong>Invisible Unicode Characters</strong> - Hidden instructions using zero-width characters, bidirectional overrides, and Unicode steganography</li>
+        <li><strong>Exfiltration Endpoints</strong> - External URLs, data URIs, and API endpoints that could leak sensitive data</li>
+        <li><strong>Self-Propagation Patterns</strong> - References to trusted folders (e.g., .cursor/commands, .windsurf/workflows, .github) and agent files (AGENTS.md, CLAUDE.md, GEMINI.md) that contains automation mechanisms, which could enable malware to spread</li>
+    </ul>
+
+    <h2>Key Features</h2>
+    <ul>
+        <li><strong>Auto-scan on project open</strong> - Immediate protection</li>
+        <li><strong>Real-time file monitoring</strong> - Detects changes as you work</li>
+        <li><strong>Smart severity scoring</strong> - CRITICAL (80+), HIGH (50-79), MEDIUM (30-49), LOW (0-29)</li>
+        <li><strong>Configurable allowlist and trusted folders</strong> - Reduce false positives for known safe domains and extensible to additional trust mechanisms</li>
+        <li><strong>Status bar integration</strong> - Shows threat count with clickable popup</li>
+        <li><strong>Tool window with sortable table</strong> - Detailed scan results view</li>
+        <li><strong>In-editor annotations</strong> - Real-time highlighting of threats with hover tooltips</li>
+        <li><strong>Comprehensive coverage</strong> - Scans all text-based files that could contain prompt injection</li>
+    </ul>
+    ]]></description>
+
+    <change-notes><![CDATA[
+    <h3>Version 1.0.1</h3>
+    <ul>
+        <li>Initial release</li>
+        <li>Detection of invisible Unicode characters</li>
+        <li>Detection of exfiltration endpoints</li>
+        <li>Detection of self-propagation patterns</li>
+        <li>Auto-scan on project open with configurable setting</li>
+        <li>Real-time file monitoring and in-editor annotations</li>
+        <li>Smart severity scoring system (CRITICAL, HIGH, MEDIUM, LOW)</li>
+        <li>Configurable allowlist for endpoints and trusted folders</li>
+        <li>Status bar widget with clickable popup</li>
+        <li>Tool window with sortable table view</li>
+        <li>Manual project scan command</li>
+        <li>Report repository action (coming soon)</li>
+    </ul>
+    ]]></change-notes>
+
+    <!-- Product and plugin compatibility requirements -->
+    <depends>com.intellij.modules.platform</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- Project Service -->
+        <projectService serviceImplementation="com.craniumai.adversarialinputs.services.AdversarialInputsService"/>
+        <projectService serviceImplementation="com.craniumai.adversarialinputs.settings.AdversarialInputsSettings"/>
+
+        <!-- Settings -->
+        <projectConfigurable
+            parentId="tools"
+            instance="com.craniumai.adversarialinputs.settings.AdversarialInputsConfigurable"
+            id="com.craniumai.adversarialinputs.settings.AdversarialInputsConfigurable"
+            displayName="Adversarial Inputs Detector"/>
+
+        <!-- External Annotator for real-time diagnostics -->
+        <externalAnnotator
+            language=""
+            implementationClass="com.craniumai.adversarialinputs.annotator.AdversarialInputsAnnotator"/>
+
+        <!-- Tool Window -->
+        <toolWindow
+            id="Adversarial Inputs"
+            anchor="bottom"
+            factoryClass="com.craniumai.adversarialinputs.toolwindow.AdversarialInputsToolWindowFactory"/>
+
+        <!-- Status Bar Widget -->
+        <statusBarWidgetFactory
+            id="AdversarialInputsStatusBar"
+            implementation="com.craniumai.adversarialinputs.statusbar.ThreatStatusBarWidgetFactory"
+            order="after memoryUsagePanel"/>
+
+        <!-- Startup Activity -->
+        <postStartupActivity implementation="com.craniumai.adversarialinputs.services.AdversarialInputsStartupActivity"/>
+
+        <!-- Notification Group -->
+        <notificationGroup id="Adversarial Inputs Detector" displayType="BALLOON"/>
+    </extensions>
+
+    <actions>
+        <!-- Scan Project Action -->
+        <action
+            id="com.craniumai.adversarialinputs.actions.ScanProjectAction"
+            class="com.craniumai.adversarialinputs.actions.ScanProjectAction"
+            text="Scan Project for Adversarial Inputs"
+            description="Scan the entire project for adversarial inputs">
+            <add-to-group group-id="ToolsMenu" anchor="last"/>
+        </action>
+
+        <!-- Report Repository Action -->
+        <action
+            id="com.craniumai.adversarialinputs.actions.ReportRepositoryAction"
+            class="com.craniumai.adversarialinputs.actions.ReportRepositoryAction"
+            text="Report This Repository"
+            description="Report this repository for containing adversarial inputs">
+            <add-to-group group-id="ToolsMenu" anchor="last"/>
+        </action>
+    </actions>
+</idea-plugin>

@@ -1,0 +1,97 @@
+{
+  "name": "adversarial-inputs-detector",
+  "displayName": "Adversarial Inputs Detector",
+  "description": "Detects adversarial inputs in documentation and code files that can exploit AI coding assistants",
+  "version": "1.0.1",
+  "publisher": "craniumai",
+  "license": "GPL-3.0",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Linters",
+    "Testing",
+    "Programming Languages"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "promptInjectionDetector.scanWorkspace",
+        "title": "Scan Workspace for Adversarial Inputs"
+      },
+      {
+        "command": "promptInjectionDetector.reportRepo",
+        "title": "Report This Repository"
+      }
+    ],
+    "configuration": {
+      "title": "Prompt Injection Detector",
+      "properties": {
+        "promptInjectionDetector.autoScanOnOpen": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically scan workspace when opened"
+        },
+        "promptInjectionDetector.minVulnLevel": {
+          "type": "string",
+          "enum": [
+            "LOW",
+            "MEDIUM",
+            "HIGH",
+            "CRITICAL"
+          ],
+          "default": "HIGH",
+          "description": "Minimum risk level to show alerts"
+        },
+        "promptInjectionDetector.endpointAllowlist": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": ["*"],
+          "description": "List of endpoint patterns to exclude from detection (supports wildcards: *, ?). Example: ['https://docs.company.com/*', 'https://github.com/*', 'localhost:*']"
+        },
+        "promptInjectionDetector.targetFolders": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            ".windsurf/workflows",
+            ".cursor/commands",
+            ".github",
+            ".github/instructions"
+          ],
+          "description": "List of trusted folder paths that may indicate self-propagation attempts"
+        },
+        "promptInjectionDetector.agentFiles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "agents.md",
+            "claude.md",
+            "gemini.md"
+          ],
+          "description": "List of special agent files that may indicate self-propagation attempts"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/vscode": "^1.80.0",
+    "typescript": "^5.9.3"
+  }
+}

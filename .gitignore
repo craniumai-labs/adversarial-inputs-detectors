@@ -1,0 +1,10 @@
+.gradle
+.idea
+build/
+!gradle-wrapper.jar
+*.iml
+*.ipr
+*.iws
+out/
+.DS_Store
+node_modules/
